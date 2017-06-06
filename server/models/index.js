@@ -2,49 +2,33 @@ var db = require('../db');
 
 module.exports = {
   messages: {
-    get: function (options, callback) {
-      db.query('SELECT * FROM messages', function(error, results) {
-        if (error) {
-          callback(error);
-          return;
-        }
-        callback(null, results);
+    get: function (callback) {
+      db.query('SELECT messages.id, messages.message, messages.roomname, users.username FROM messages LEFT OUTER JOIN users ON (messages.userid = users.id) ORDER BY messages.id DESC', function(error, results) {
+        callback(error, results);
       });
     }, // a function which produces all the messages
     post: function (data, callback) {
-      var queryString = `INSERT INTO messages (message, username, roomname) VALUES (?, ?, ?)`;
-      var queryArgs = [`${data.message}, ${data.username}, ${data.roomname}`];
-      db.query(queryString, queryArgs, function(error, results) {
-        if (error) {
-          callback(error);
-          return;
-        }
-        callback(null, results);
+      var queryString = `INSERT INTO messages (message, userid, roomname) VALUE (?, (SELECT id FROM users WHERE username = ? limit 1), ?)`;
+      // var queryArgs = [`${data.message}, ${data.username}, ${data.roomname}`];
+      db.query(queryString, data, function(error, results) {
+        callback(error, results);
       });
-    } // a function which can be used to insert a message into the database
+    }
   },
 
   users: {
     // Ditto as above.
-    // get: function (options, callback) {
-    //   db.query('SELECT * FROM users', function (error, results) { // need to figure out what a get request here does
-    //     if (error) {
-    //       callback(error);
-    //       return;
-    //     }
-    //     callback(null, results);
-    //   });
-    // },
-    // post: function (data, callback) {
-    //   var queryString = `INSERT INTO users (username) VALUES (?)`;
-    //   var queryArgs = [`${data.username}`];
-    //   db.query(queryString, queryArgs, function(error, results) {
-    //     if (error) {
-    //       callback(error);
-    //       return;
-    //     }
-    //     callback(null, results);
-    //   });
-    // }
+    get: function (callback) {
+      db.query('SELECT * FROM users', function (error, results) { // need to figure out what a get request here does
+        callback(error, results);
+      });
+    },
+    post: function (data, callback) {
+      var queryString = `INSERT INTO users(username) VALUES (?)`;
+      // var queryArgs = [`${data.username}`];
+      db.query(queryString, data, function(error, results) {
+        callback(error, results);
+      });
+    }
   }
 }

@@ -7,14 +7,17 @@ USE chat;
 CREATE TABLE messages (
   /* Describe your table here.*/
   id INTEGER NOT NULL AUTO_INCREMENT,
-  username VARCHAR(30),
+  userid INT NOT NULL,
   message VARCHAR(140),
   roomname VARCHAR(30),
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY(id)
 );
 
+CREATE TABLE users (
+  id INT NOT NULL AUTO_INCREMENT,
+  username VARCHAR(30) NOT NULL,
+  PRIMARY KEY(id)
+);
 /* Create other tables and define schemas for them here! */
 
 
